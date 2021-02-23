@@ -2,10 +2,10 @@ use libc;
 use std::ffi::CString;
 use std::os::raw::c_char;
 
-// File: lib.rs
+/// File: lib.rs
 
-// For further reading ...
-// #[no_mangle] - // https://internals.rust-lang.org/t/precise-semantics-of-no-mangle/4098
+/// For further reading ...
+/// #[no_mangle] - // https://internals.rust-lang.org/t/precise-semantics-of-no-mangle/4098
 
 #[no_mangle]
 pub unsafe extern "C" fn get_some_cstr(desc: *mut *mut c_char) -> isize {
@@ -53,15 +53,15 @@ pub unsafe extern "C" fn get_some_cstr_2(desc: *mut *mut c_char) -> isize {
     0
 }
 
-// Our implementation of the Error type.
+/// Our implementation of the Error type.
 pub struct Error {
     magic: u32,
     msg: CString,
     code: isize,
 }
 
-// Some C code uses magic values in structures to determine if the pointer
-// is of the correct type.
+///  Some C code uses magic values in structures to determine if the pointer
+/// is of the correct type.
 const ERROR_MAGIC: u32 = 0xDEADBEEF;
 
 // A function which creates an example Error
@@ -73,7 +73,7 @@ fn example_error() -> Error {
     }
 }
 
-// Adding this so that we can get a message printed when the Error is freed.
+/// Adding this so that we can get a message printed when the Error is freed.
 impl Drop for Error {
     fn drop(&mut self) {
         println!("Error struct being dropped ...");
@@ -104,8 +104,8 @@ pub unsafe extern "C" fn error_free_with_result(e: *mut *mut Error) -> i32 {
     0
 }
 
-// The next two function examples are taken directly out of the rust documentation
-// ref. https://doc.rust-lang.org/std/boxed/
+/// The next two function examples are taken directly out of the rust documentation
+/// ref. https://doc.rust-lang.org/std/boxed/
 #[no_mangle]
 pub extern "C" fn error_new() -> Box<Error> {
     Box::new(example_error())
@@ -116,9 +116,9 @@ pub extern "C" fn error_new() -> Box<Error> {
 #[no_mangle]
 pub extern "C" fn error_free(_: Option<Box<Error>>) {}
 
-// Our example "getter" methods which work on the Error type.  The value
-// returned is only valid as long as the Error has not been freed.  If C
-// caller needs a longer lifetime they need to copy the value.
+/// Our example "getter" methods which work on the Error type.  The value
+/// returned is only valid as long as the Error has not been freed.  If C
+/// caller needs a longer lifetime they need to copy the value.
 #[no_mangle]
 pub unsafe extern "C" fn error_msg_get(e: &Error) -> *const c_char {
     e.msg.as_ptr()
